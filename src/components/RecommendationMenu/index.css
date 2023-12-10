@@ -1,0 +1,30 @@
+.centered-container {
+  top: 1rem;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+}
+
+.controls-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.selection-list {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.remove-button {
+  margin-right: 0.5rem;
+}
+
+.select {
+  flex: 1;
+}
