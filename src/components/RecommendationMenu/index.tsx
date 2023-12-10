@@ -26,8 +26,6 @@ function RecommendationMenu() {
   };
 
   const onRemoveGameSelect = (index: number) => {
-    console.log(index);
-
     const newSelectedGames = selectedGames.filter(
       (_, gameIndex) => index !== gameIndex
     );
