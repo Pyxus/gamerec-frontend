@@ -26,11 +26,14 @@ function RecommendationMenu() {
   };
 
   const onRemoveGameSelect = (index: number) => {
-    const newSelectedGames = selectedGames.filter(
-      (_, gameIndex) => index !== gameIndex
-    );
+    if (selectedGames.length > 1) {
+      //TODO: Show Warning when attempt to make list empty
+      const newSelectedGames = selectedGames.filter(
+        (_, gameIndex) => index !== gameIndex
+      );
 
-    setSelectedGames(newSelectedGames);
+      setSelectedGames(newSelectedGames);
+    }
   };
 
   const onRatingChanged = (index: number, newRating: number | string) => {
