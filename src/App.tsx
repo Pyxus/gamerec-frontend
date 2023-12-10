@@ -1,5 +1,5 @@
 import "./App.css";
-import RecommendationMenu from "./components/RecommendationMenu";
+import RecommendationMenu from "@/components/RecommendationMenu";
 
 function App() {
   return (
