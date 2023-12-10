@@ -1,11 +1,17 @@
 import { Button } from "@mantine/core";
 import "./index.css";
 
-function EngineControls() {
+interface EngineControlsProps {
+  onAddGame?: () => void;
+}
+
+function EngineControls({ onAddGame }: EngineControlsProps) {
   return (
     <div className="controls-container">
-      <Button style={{ width: "100%", marginRight: "1rem" }}>Add Game</Button>
-      <Button color="teal" style={{ width: "100%" }}>
+      <Button w={"100%"} mr={"1rem"} onClick={onAddGame}>
+        Add Game
+      </Button>
+      <Button color="teal" w={"100%"}>
         Submit
       </Button>
     </div>

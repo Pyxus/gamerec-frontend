@@ -1,13 +1,32 @@
-import { Select, Button } from "@mantine/core";
+import { Select, Button, NumberInput } from "@mantine/core";
 import "./index.css";
 
-function GameSelect() {
+interface GameSelectProps {
+  gameName?: string;
+  gameRating?: number;
+  onRemoveGameSelect?: () => void;
+}
+
+function GameSelect({
+  gameName,
+  gameRating,
+  onRemoveGameSelect,
+}: GameSelectProps) {
   return (
     <div className="selection-list">
-      <Button className="remove-button" variant="light">
+      <Button
+        className="remove-button"
+        variant="light"
+        onClick={onRemoveGameSelect}
+      >
         X
       </Button>
-      <Select className="select" placeholder="Select a game" />
+      <Select
+        className="select"
+        searchValue={gameName}
+        placeholder="Select a game"
+      />
+      <NumberInput defaultValue={gameRating} pl={5} style={{ width: "15%" }} />
     </div>
   );
 }
