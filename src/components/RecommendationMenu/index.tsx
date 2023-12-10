@@ -18,11 +18,11 @@ const DefaultSelectedGame: SelectedGame = {
 
 function RecommendationMenu() {
   const [selectedGames, setSelectedGames] = useState<SelectedGame[]>([
-    DefaultSelectedGame,
+    { ...DefaultSelectedGame },
   ]);
 
   const onAddGame = () => {
-    setSelectedGames([...selectedGames, DefaultSelectedGame]);
+    setSelectedGames([...selectedGames, { ...DefaultSelectedGame }]);
   };
 
   const onRemoveGameSelect = (index: number) => {
@@ -31,6 +31,11 @@ function RecommendationMenu() {
     );
 
     setSelectedGames(newSelectedGames);
+  };
+
+  const onRatingChanged = (index: number, newRating: number | string) => {
+    selectedGames[index].rating = Number(newRating);
+    setSelectedGames(selectedGames);
   };
 
   return (
@@ -53,6 +58,9 @@ function RecommendationMenu() {
                 gameName={game.name}
                 gameRating={game.rating}
                 onRemoveGameSelect={() => onRemoveGameSelect(index)}
+                onRatingChanged={(newRating) =>
+                  onRatingChanged(index, newRating)
+                }
               />
             ))}
           </Card.Section>

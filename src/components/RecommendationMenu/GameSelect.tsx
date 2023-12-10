@@ -5,12 +5,14 @@ interface GameSelectProps {
   gameName?: string;
   gameRating?: number;
   onRemoveGameSelect?: () => void;
+  onRatingChanged?: (newRating: number | string) => void;
 }
 
 function GameSelect({
   gameName,
   gameRating,
   onRemoveGameSelect,
+  onRatingChanged,
 }: GameSelectProps) {
   return (
     <div className="selection-list">
@@ -26,7 +28,12 @@ function GameSelect({
         searchValue={gameName}
         placeholder="Select a game"
       />
-      <NumberInput defaultValue={gameRating} pl={5} style={{ width: "15%" }} />
+      <NumberInput
+        defaultValue={gameRating}
+        pl={5}
+        w={"15%"}
+        onChange={onRatingChanged}
+      />
     </div>
   );
 }
