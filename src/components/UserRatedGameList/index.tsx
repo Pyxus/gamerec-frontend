@@ -38,37 +38,4 @@ function UserRatedGamesList({
     </>
   );
 }
-
-/*
-function UserRatedGamesList({
-  userRatedGames,
-  onGameRemoved: onRemoveGame,
-  onGameRatingChanged: onRatingChanged,
-  onGameSearchTextChanged,
-}: UserRatedGamesListProps) {
-  return (
-    <>
-      {userRatedGames.map((game, index) => (
-        <GameSelect
-          key={index}
-          gameName={game.name}
-          gameRating={game.rating}
-          isLoading={game.isLoading}
-          data={game.searchData.map(
-            (res) =>
-              `${res.name} (${new Date(
-                res.first_release_date * 1000
-              ).getFullYear()})`
-          )}
-          onGameRemoved={() => onRemoveGame(index)}
-          onRatingChanged={(newRating) => onRatingChanged(index, newRating)}
-          onGameSearchTextChanged={(search: string) =>
-            onGameSearchTextChanged(index, search)
-          }
-        />
-      ))}
-    </>
-  );
-}*/
-
 export default UserRatedGamesList;
