@@ -11,3 +11,8 @@ export interface UserRatedGame {
   searchResults: GameSearchResult[];
   isSearchingDatabase: boolean;
 }
+
+export interface RecommendedGame {
+  rating: number;
+  game: { id: number; name: string };
+}

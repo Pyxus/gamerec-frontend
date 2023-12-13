@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Card, Container } from "@mantine/core";
 import EngineControls from "./EngineControls";
 import axios from "axios";
-import { UserRatedGame, GameSearchResult } from "@/types";
+import { UserRatedGame, GameSearchResult, RecommendedGame } from "@/types";
 import UserRatedGamesList from "@/components/UserRatedGameList";
 
 const DefaultUserRatedGame: UserRatedGame = {
-  rating: 0,
+  rating: 1,
   id: -1,
   name: "",
   searchResults: [],
@@ -20,6 +20,11 @@ function RecommendationMenu() {
   ]);
 
   const [activeGameIndex, setActiveGameIndex] = useState<number | null>(null);
+  const [isGeneratingRecommendations, setIsGeneratingRecommendations] =
+    useState(false);
+  const [recommendedGames, setRecommendedGames] = useState<RecommendedGame[]>(
+    []
+  );
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
@@ -68,6 +73,7 @@ function RecommendationMenu() {
   };
 
   const onGameRatingChanged = (index: number, newRating: number | string) => {
+    //TODO: Rating must be non-zero. It be easy to clamp it here but I also need to figure out how to clamp the slider UI just for a better user experience
     const newSelectedGames = [...userRatedGames];
     newSelectedGames[index].rating = Number(newRating);
     setUserRatedGames(newSelectedGames);
@@ -82,21 +88,43 @@ function RecommendationMenu() {
     setUserRatedGames(newUserRatedGames);
   };
 
-  const onGameSelected = (index: number, gameName: string) => {
+  const onGameSelected = (index: number, game: GameSearchResult) => {
     const newUserRatedGames = [...userRatedGames];
-    newUserRatedGames[index].name = gameName;
+    newUserRatedGames[index].name = game.name;
+    newUserRatedGames[index].id = game.id;
     setUserRatedGames(newUserRatedGames);
+  };
+
+  const onSubmitGames = async () => {
+    try {
+      setIsGeneratingRecommendations(true);
+      const gameDict: { [key: number]: number } = {};
+      userRatedGames.forEach((game) => (gameDict[game.id] = game.rating));
+
+      const response = await axios.post<RecommendedGame[]>(
+        `${import.meta.env.VITE_BACKEND_URL}/game_recommendations`,
+        gameDict
+      );
+
+      setRecommendedGames(response.data);
+
+      setIsGeneratingRecommendations(false);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
     <div className="centered-container">
-      <Container size="sm">
+      <Container size="sm" w={"100rem"}>
         <Card
           shadow="sm"
           padding="lg"
           radius="md"
+          pl="5rem"
+          pr="5rem"
+          pb="3rem"
           withBorder
-          style={{ padding: "3rem" }}
         >
           <Card.Section m={"auto"}>
             <h2>Game Recommendation Engine</h2>
@@ -111,7 +139,22 @@ function RecommendationMenu() {
             />
           </Card.Section>
           <Card.Section>
-            <EngineControls onAddGame={onAddGame} />
+            <EngineControls
+              onAddGame={onAddGame}
+              onSubmitGames={onSubmitGames}
+              isGeneratingRecommendations={isGeneratingRecommendations}
+            />
+          </Card.Section>
+        </Card>
+        <Card shadow="sm" mt={"10"} padding="lg" withBorder>
+          <Card.Section p="1rem">
+            <ul>
+              {recommendedGames.map((game, index) => (
+                <li key={index}>{`${game.game.name} (${game.rating.toFixed(
+                  2
+                )})`}</li>
+              ))}
+            </ul>
           </Card.Section>
         </Card>
       </Container>

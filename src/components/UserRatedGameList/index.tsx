@@ -1,5 +1,5 @@
 import "./index.css";
-import { UserRatedGame } from "@/types";
+import { GameSearchResult, UserRatedGame } from "@/types";
 import GameSelect from "@/components/GameSelect";
 
 interface UserRatedGamesListProps {
@@ -7,7 +7,7 @@ interface UserRatedGamesListProps {
   onGameRemoved: (index: number) => void;
   onGameRatingChanged: (index: number, newRating: number | string) => void;
   onGameSearchTextChanged: (index: number, serachText: string) => void;
-  onGameSelected: (index: number, gameName: string) => void;
+  onGameSelected: (index: number, game: GameSearchResult) => void;
 }
 
 function UserRatedGamesList({
@@ -29,7 +29,7 @@ function UserRatedGamesList({
           onGameRatingChanged={(newRating) =>
             onGameRatingChanged(index, newRating)
           }
-          onGameSelected={(gameName) => onGameSelected(index, gameName)}
+          onGameSelected={(game) => onGameSelected(index, game)}
           onGameSearchTextChanged={(newSearchText) =>
             onGameSearchTextChanged(index, newSearchText)
           }

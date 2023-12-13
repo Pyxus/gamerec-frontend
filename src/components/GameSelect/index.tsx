@@ -14,7 +14,7 @@ interface GameSelectProps {
   gameSearchResults: GameSearchResult[];
   onGameRemoved: () => void;
   onGameRatingChanged: (newRating: number) => void;
-  onGameSelected: (gameName: string) => void;
+  onGameSelected: (game: GameSearchResult) => void;
   onGameSearchTextChanged: (newSearchText: string) => void;
 }
 
@@ -31,15 +31,25 @@ function GameSelect({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
 
+  const shouldFilterOptions = !gameSearchResults.some(
+    (item) => item.name === selectedGameName
+  );
+
+  const gameOptions = shouldFilterOptions
+    ? gameSearchResults.filter((item) =>
+        item.name.toLowerCase().includes(selectedGameName.toLowerCase().trim())
+      )
+    : gameSearchResults;
+
   const options = isSearchingDatabase
     ? SearchingForGameOption(selectedGameName)
-    : FilteredGameOptions(gameSearchResults, selectedGameName);
+    : GameOptions(gameOptions);
 
   return (
     <Combobox
       onOptionSubmit={(optionValue) => {
         if (!isSearchingDatabase) {
-          onGameSelected(optionValue);
+          onGameSelected(gameOptions[Number(optionValue)]);
           combobox.closeDropdown();
         }
       }}
@@ -86,9 +96,7 @@ function GameSelect({
         </div>
       </Combobox.Target>
 
-      <Combobox.Dropdown>
-        <Combobox.Options>{options}</Combobox.Options>
-      </Combobox.Dropdown>
+      <Combobox.Dropdown>{options}</Combobox.Dropdown>
     </Combobox>
   );
 }
@@ -102,25 +110,12 @@ function SearchingForGameOption(gameName: string) {
   );
 }
 
-function FilteredGameOptions(
-  games: GameSearchResult[],
-  selectedGameName: string
-) {
-  const shouldFilterOptions = !games.some(
-    (item) => item.name === selectedGameName
-  );
-
-  const filteredOptions = shouldFilterOptions
-    ? games.filter((item) =>
-        item.name.toLowerCase().includes(selectedGameName.toLowerCase().trim())
-      )
-    : games;
-
-  if (filteredOptions.length === 0) {
+function GameOptions(games: GameSearchResult[]) {
+  if (games.length === 0) {
     return [<Combobox.Empty>Nothing found</Combobox.Empty>];
   } else {
-    return filteredOptions.map((item, index) => (
-      <Combobox.Option value={item.name} key={index}>
+    return games.map((item, index) => (
+      <Combobox.Option value={String(index)} key={index}>
         {item.name}
         {` (${new Date(item.first_release_date * 1000).getFullYear()})`}
       </Combobox.Option>
