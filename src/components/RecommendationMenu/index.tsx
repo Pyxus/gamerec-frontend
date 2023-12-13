@@ -1,44 +1,91 @@
+import "./index.css";
 import React, { useEffect, useState } from "react";
 import { Card, Container } from "@mantine/core";
-import GameSelect from "./GameSelect";
 import EngineControls from "./EngineControls";
-import "./index.css";
+import axios from "axios";
+import { UserRatedGame, GameSearchResult } from "@/types";
+import UserRatedGamesList from "@/components/UserRatedGameList";
 
-type SelectedGame = {
-  rating: number;
-  id: number;
-  name: string;
-};
-
-const DefaultSelectedGame: SelectedGame = {
-  rating: 1.0,
+const DefaultUserRatedGame: UserRatedGame = {
+  rating: 0,
   id: -1,
-  name: "Test",
+  name: "",
+  searchResults: [],
+  isSearchingDatabase: false,
 };
 
 function RecommendationMenu() {
-  const [selectedGames, setSelectedGames] = useState<SelectedGame[]>([
-    { ...DefaultSelectedGame },
+  const [userRatedGames, setUserRatedGames] = useState<UserRatedGame[]>([
+    { ...DefaultUserRatedGame },
   ]);
 
+  const [activeGameIndex, setActiveGameIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      userRatedGames.forEach(async (userRatedGame) => {
+        if (activeGameIndex != null && userRatedGame.name !== "") {
+          try {
+            const response = await axios.get(
+              `${import.meta.env.VITE_BACKEND_URL}/search_games?name=${
+                userRatedGames[activeGameIndex].name
+              }`
+            );
+            setUserRatedGames((prev) =>
+              prev.map((prevGame, index) =>
+                index === activeGameIndex
+                  ? {
+                      ...prevGame,
+                      searchResults: response.data,
+                      isSearchingDatabase: false,
+                    }
+                  : prevGame
+              )
+            );
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+      });
+    }, 1000);
+
+    return () => clearTimeout(debounceTimer);
+  }, [userRatedGames]);
+
   const onAddGame = () => {
-    setSelectedGames([...selectedGames, { ...DefaultSelectedGame }]);
+    setUserRatedGames([...userRatedGames, { ...DefaultUserRatedGame }]);
   };
 
-  const onRemoveGameSelect = (index: number) => {
-    if (selectedGames.length > 1) {
+  const onGameRemoved = (index: number) => {
+    if (userRatedGames.length > 1) {
       //TODO: Show Warning when attempt to make list empty
-      const newSelectedGames = selectedGames.filter(
+      const newSelectedGames = userRatedGames.filter(
         (_, gameIndex) => index !== gameIndex
       );
 
-      setSelectedGames(newSelectedGames);
+      setUserRatedGames(newSelectedGames);
     }
   };
 
-  const onRatingChanged = (index: number, newRating: number | string) => {
-    selectedGames[index].rating = Number(newRating);
-    setSelectedGames(selectedGames);
+  const onGameRatingChanged = (index: number, newRating: number | string) => {
+    const newSelectedGames = [...userRatedGames];
+    newSelectedGames[index].rating = Number(newRating);
+    setUserRatedGames(newSelectedGames);
+  };
+
+  const onGameSearchTextChanged = (index: number, searchText: string) => {
+    const newUserRatedGames = [...userRatedGames];
+    newUserRatedGames[index].name = searchText;
+    newUserRatedGames[index].isSearchingDatabase = true;
+
+    setActiveGameIndex(index);
+    setUserRatedGames(newUserRatedGames);
+  };
+
+  const onGameSelected = (index: number, gameName: string) => {
+    const newUserRatedGames = [...userRatedGames];
+    newUserRatedGames[index].name = gameName;
+    setUserRatedGames(newUserRatedGames);
   };
 
   return (
@@ -55,17 +102,13 @@ function RecommendationMenu() {
             <h2>Game Recommendation Engine</h2>
           </Card.Section>
           <Card.Section>
-            {selectedGames.map((game, index) => (
-              <GameSelect
-                key={index}
-                gameName={game.name}
-                gameRating={game.rating}
-                onRemoveGameSelect={() => onRemoveGameSelect(index)}
-                onRatingChanged={(newRating) =>
-                  onRatingChanged(index, newRating)
-                }
-              />
-            ))}
+            <UserRatedGamesList
+              userRatedGames={userRatedGames}
+              onGameRemoved={onGameRemoved}
+              onGameRatingChanged={onGameRatingChanged}
+              onGameSearchTextChanged={onGameSearchTextChanged}
+              onGameSelected={onGameSelected}
+            />
           </Card.Section>
           <Card.Section>
             <EngineControls onAddGame={onAddGame} />
