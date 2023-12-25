@@ -35,7 +35,7 @@ const ServerStatus = () => {
         <div>
           <Badge color="red">Error Connecting With Server!</Badge>
           <p>
-            The server is hosted on a free service which pauses ever 24hrs so
+            The server is hosted on a free service which pauses every 24hrs so
             this may be why.
           </p>
         </div>
