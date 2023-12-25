@@ -1,10 +1,12 @@
 import "./index.css";
 import { useEffect, useState } from "react";
 import { Card, Container } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import EngineControls from "./EngineControls";
 import axios from "axios";
 import { UserRatedGame, GameSearchResult, RecommendedGame } from "@/types";
 import UserRatedGamesList from "@/components/UserRatedGameList";
+import ServerStatus from "../ServerStatus";
 
 const DefaultUserRatedGame: UserRatedGame = {
   rating: 1,
@@ -63,12 +65,16 @@ function RecommendationMenu() {
 
   const onGameRemoved = (index: number) => {
     if (userRatedGames.length > 1) {
-      //TODO: Show Warning when attempt to make list empty
       const newSelectedGames = userRatedGames.filter(
         (_, gameIndex) => index !== gameIndex
       );
 
       setUserRatedGames(newSelectedGames);
+    } else {
+      notifications.show({
+        title: "Warning",
+        message: "At least one input game is required",
+      });
     }
   };
 
@@ -127,6 +133,11 @@ function RecommendationMenu() {
         >
           <Card.Section m={"auto"}>
             <h2>Game Recommendation Engine</h2>
+            <ServerStatus />
+            <p>
+              Please input games and a weight value. The weight value represents
+              how much you favor the game relative to other games in the list
+            </p>
           </Card.Section>
           <Card.Section>
             <UserRatedGamesList
