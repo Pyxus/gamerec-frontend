@@ -88,6 +88,7 @@ function GameSelect({
             onBlur={() => combobox.closeDropdown()}
           />
           <NumberInput
+            min={1}
             defaultValue={1}
             pl={5}
             w={"15%"}

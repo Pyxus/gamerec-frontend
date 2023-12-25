@@ -73,9 +73,8 @@ function RecommendationMenu() {
   };
 
   const onGameRatingChanged = (index: number, newRating: number | string) => {
-    //TODO: Rating must be non-zero. It be easy to clamp it here but I also need to figure out how to clamp the slider UI just for a better user experience
     const newSelectedGames = [...userRatedGames];
-    newSelectedGames[index].rating = Number(newRating);
+    newSelectedGames[index].rating = Math.max(1, Number(newRating));
     setUserRatedGames(newSelectedGames);
   };
 
